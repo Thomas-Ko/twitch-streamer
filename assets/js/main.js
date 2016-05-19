@@ -21,6 +21,7 @@ model = {
 controller= {
 	init : function(){
 		controller.getChannelAPIData(model.channels[0]);
+		controller.getChannelStreamStatus(model.channels[0]);
 		view.init();
 	},
 
@@ -39,7 +40,17 @@ controller= {
 		});
 	},
 
+	getChannelStreamStatus: function(channelName){
+		$.ajax({
+	  		method: "GET",
+	  		url: "https://api.twitch.tv/kraken/streams/" + channelName +"?callback=?",
+	  		dataType: "jsonp",
 
+	  		success: function( response ) {
+	   	 		console.log(response.stream);
+	    	},
+		});
+	},
 
 	setChannelModel : function(channelObj){
 		model.channelData = {
@@ -53,9 +64,24 @@ controller= {
 		};		
 	},
 
+	setChannelStatus : function(channelObj){
+		var streaming;
+
+		if(channelObj.stream===null){
+			streaming = false;
+		} else {
+			streaming = true;
+		}
+
+		model.channelData = {
+			streaming : streaming,
+		};
+	},
+
 	getChannelModel : function(){
 		return model.channelData;
-	}
+	},
+
 };  //end controller
 
 view = {
@@ -74,8 +100,18 @@ view = {
 		var status = data.status;
 		var views = data.views;
 		var logoURL = data.logoURL;
+		var streaming = data.streaming;
+		var streamStatus;
 
-		$("body").append('<h3>'+displayName+'</h3><p>'+status+'</p><p>' + followers + ' Followers</p><p>'+views+' Views</p>' + '<img src="' + logoURL+'">');
+		var streamHtmlCode;
+
+		if (streaming){
+			streamHtmlCode = '<p>Live</p>';
+		} else {
+			streamHtmlCode = '<p>Offline</p>';
+		}
+
+		$("body").append('<h3>'+displayName+'</h3><p>'+status+'</p><p>' + followers + ' Followers</p><p>'+views+' Views</p>' + '<img src="' + logoURL+'">' + streamHtmlCode);
 
 	}
 };
