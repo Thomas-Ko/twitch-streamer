@@ -13,15 +13,18 @@ model = {
 		followers: null,
 		logoURL: null,
 		url: null,
-		views: null,
+		viewers: null,
+		streaming:null,
 	}
 };
 
 
 controller= {
 	init : function(){
-		controller.getChannelAPIData(model.channels[0]);
-		controller.getChannelStreamStatus(model.channels[0]);
+		// controller.getChannelAPIData(model.channels[8]);
+		controller.getChannelStreamStatus(model.channels[8]);
+		
+		
 		view.init();
 	},
 
@@ -47,7 +50,10 @@ controller= {
 	  		dataType: "jsonp",
 
 	  		success: function( response ) {
+	   	 		console.log("getChannelStreamStatus:");
 	   	 		console.log(response.stream);
+	   	 		controller.setChannelStatus(response, channelName);
+	   	 		// controller.getChannelAPIData(channelName);
 	    	},
 		});
 	},
@@ -60,26 +66,48 @@ controller= {
 			followers: channelObj.followers,
 			logoURL: channelObj.logo,
 			url: channelObj.url,
-			views: channelObj.views,
+			// viewers: channelObj.views,
 		};		
 	},
 
-	setChannelStatus : function(channelObj){
-		var streaming;
+	setChannelStatus : function(channelObj, channelName){
+		var stream;
 
 		if(channelObj.stream===null){
-			streaming = false;
+			stream = false;
+			model.channelData = {
+				streaming : stream,
+			};	
+			controller.getChannelAPIData(channelName);
+
 		} else {
-			streaming = true;
+			stream = true;
+
+			model.channelData = {
+				name: channelObj.stream.channel.name,
+				displayName: channelObj.stream.channel.display_name,
+				status: channelObj.stream.channel.status,
+				followers: channelObj.stream.channel.followers,
+				logoURL: channelObj.stream.channel.logo,
+				url: channelObj._links.self,
+				viewers: channelObj.stream.viewers,
+				streaming : stream,
+			};	
 		}
 
-		model.channelData = {
-			streaming : streaming,
-		};
+		console.log("stream is " +stream);
+
+		
+		console.log(channelObj);
+		// console.log(channelObj.stream.channel.logo);
+
 	},
 
 	getChannelModel : function(){
+		console.log("getChannelModel:");
+		console.log(model.channelData);
 		return model.channelData;
+
 	},
 
 };  //end controller
@@ -87,40 +115,46 @@ controller= {
 view = {
 	init: function(){
 		$(document).ajaxStop(function () {
-			console.log("view init function");
+			// console.log("view init function");
 			var data = controller.getChannelModel();
-			console.log(data);
+			// console.log(data);
 			view.renderDiv(data);
 		});
 	},
 
 	renderDiv: function(data){
+		// console.log(data);
+		// console.log(data.streaming);
 		var followers = data.followers;
 		var displayName = data.displayName;
 		var status = data.status;
-		var views = data.views;
+		var viewers = data.viewers;
 		var logoURL = data.logoURL;
 		var streaming = data.streaming;
-		var streamStatus;
-		var imgID = displayName;
+		var imgID = displayName +"IMG";
 
-		var streamHtmlCode;
+		var streamRowClass,streamIconHTML, statusHTML;
 
 		if (streaming){
-			streamHtmlCode = '<p>Live</p>';
+			streamRowClass = 'online';
+			streamIconHTML = '<i class="fa fa-check-circle online-icon icon" aria-hidden="true"></i>';
+			statusHTML = '<span>'+status+'</status>';
+
 		} else {
-			streamHtmlCode = '<p>Offline</p>';
+			streamRowClass = 'offline';
+			streamIconHTML = '<i class="fa fa-minus-circle offline-icon icon" aria-hidden="true"></i>';
+			statusHTML = '<span></status>';
 		}
 
-		console.log(logoURL);
+		// console.log(logoURL);
 
 		$("main").append(
 			'<div class="col-xs-12 channel">'+
 				'<div class="channel-inner">' +
-					'<div class="row">' +
+					'<div class="row '+streamRowClass+'">' +
 						'<div class="col-xs-2"><img src=' + logoURL + ' id="'+ imgID +'"></div>' +
 						'<div class="col-xs-10 info-container">'+
-							'<h3>'+displayName+'</h3>'+
+							'<h3>'+displayName+'</h3>'+ statusHTML+ streamIconHTML+
 						'</div>' +
 					'</div>' +
 				'</div>'+
