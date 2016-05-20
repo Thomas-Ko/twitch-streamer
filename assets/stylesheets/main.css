@@ -83,23 +83,46 @@ h1 {
 
 .online {
 	background-color: rgba(53, 160, 128, 0.05)
+	
 }
 
-.online-button {
-
+.online-icon {
+	color: rgba(26, 147, 110, 1);
+	text-shadow: 0px 0px 7px rgba(53, 160, 128, 1);
+	
 }
+
+
 
 .offline {
 	background-color: rgba(238, 78, 86, 0.05);
 }
 
+.offline-icon {
+	color: rgba(219, 39, 48, 1);
+	text-shadow: 0px 0px 7px rgba(238, 78, 86, 1);
+	
+}
+
+.icon {
+	position:absolute;
+	font-size:20px;
+	right:50px;
+	top:36px;
+	opacity:0.6;
+}
+
+.info-container {
+	position:relative;
+}
+
 img {
 	height:85px;
 	width:85px;
-	 border-radius: 50%;
-	 padding:10px;
-	 align:middle;
-	 margin-left:5px;
+	border-radius: 50%;
+	padding:10px;
+	align:middle;
+	/*margin-left:5px;*/
 }
 
 h3 {
