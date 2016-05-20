@@ -166,6 +166,9 @@ view = {
 			var data = controller.getChannelModel();
 			// console.log(data);
 			view.renderDiv(data);
+			view.offlineButton();
+			view.onlineButton();
+			view.allButton();
 		});
 	},
 
@@ -186,15 +189,17 @@ view = {
 			var streaming = data[i].streaming;
 			var imgID = displayName +"IMG";
 
-			var streamRowClass,streamIconHTML, statusHTML;
+			var streamBackground,streamIconHTML, statusHTML;
 
 			if (streaming){
-				streamRowClass = 'online';
+				streamClass = "online";
+				streamBackground = 'online-bg';
 				streamIconHTML = '<i class="fa fa-check-circle online-icon icon" aria-hidden="true"></i>';
 				statusHTML = '<span>'+status+'</status>';
 
 			} else {
-				streamRowClass = 'offline';
+				streamClass = "offline";
+				streamBackground = 'offline-bg';
 				streamIconHTML = '<i class="fa fa-minus-circle offline-icon icon" aria-hidden="true"></i>';
 				statusHTML = '<span></status>';
 			}
@@ -202,9 +207,9 @@ view = {
 			// console.log(logoURL);
 
 			$("main").append(
-				'<div class="col-xs-12 channel">'+
+				'<div class="col-xs-12 channel '+ streamClass +'">'+
 					'<div class="channel-inner">' +
-						'<div class="row '+streamRowClass+'">' +
+						'<div class="row '+streamBackground+'">' +
 							'<div class="col-xs-2"><img src=' + logoURL + ' id="'+ imgID +'"></div>' +
 							'<div class="col-xs-10 info-container">'+
 								'<h3>'+displayName+'</h3>'+ statusHTML+ streamIconHTML+
@@ -217,7 +222,31 @@ view = {
 
 		}
 
+	}, //end view.renderDiv
+
+	offlineButton: function(){
+		$("#statusOffline").on("click", function(){
+			$(".online").hide();
+			$(".offline").show();
+		});
+	},
+
+	onlineButton: function(){
+		$("#statusOnline").on("click", function(){
+			$(".offline").hide();
+			$(".online").show();
+		});
+	},
+
+	allButton: function(){
+		$("#statusAll").on("click", function(){
+			$(".offline").show();
+			$(".online").show();
+		});
 	}
+
+
+
 };
 
 // $.ajax({
