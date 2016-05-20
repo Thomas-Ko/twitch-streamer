@@ -1,0 +1,109 @@
+body {
+	background: #2E2E2E;
+		
+		
+}
+
+.container {
+	max-width:600px;
+}
+
+
+
+header {
+	background-color: #7d5bbe ;
+
+	/*font-family: 'Press Start 2P', cursive;*/
+	/*font-family: 'Karla', sans-serif;*/
+	font-family: 'Poiret One', cursive;
+	/*font-family: 'Coda', cursive;*/
+	color: #fff;
+	/*margin-top:25px;*/
+	margin-top:20px;
+	/*border-bottom: 1px solid #6f49b6 ;*/
+}
+
+nav {
+	background: #6441a5;
+	font-size:20px;
+	text-align:center;
+	color:white;
+	/*border-top: 1px solid #8c6dc5;*/
+	/*border-bottom: 1px solid #8c6dc5;*/
+	font-family: 'Open Sans', sans-serif;
+	text-transform: uppercase;
+	font-size:15px;
+		
+}
+
+.row {
+	margin:0px;
+}
+
+main {
+	font-family: 'Open Sans', sans-serif;
+	color: #433e51;
+}
+
+.status-div {
+	padding-top:10px;
+	padding-bottom:10px;
+}
+
+.active {
+	background-color: rgba(140, 222, 168, 0.5);
+
+}
+
+.online-div {
+	border-right: 1px solid #8c6dc5;
+	border-left: 1px solid #8c6dc5;
+}
+
+h1 {
+	font-size:80px;
+	/*text-transform:uppercase;*/
+	text-align:center;
+	padding-top:25px;
+	padding-bottom:25px;
+	margin:0;
+	text-shadow: 1px 1px 5px rgba(36, 33, 43, 1);
+	/*color: #FFF3A1;*/
+}
+
+.channel {
+	padding:0px;
+}
+
+.channel-inner {
+	background: #ecf0f1;
+	border-bottom:1px solid #d3dcde;
+	border-top: 1px solid #f8fafa;
+}
+
+.online {
+	background-color: rgba(53, 160, 128, 0.05)
+}
+
+.online-button {
+
+}
+
+.offline {
+	background-color: rgba(238, 78, 86, 0.05);
+}
+
+img {
+	height:85px;
+	width:85px;
+	 border-radius: 50%;
+	 padding:10px;
+	 align:middle;
+	 margin-left:5px;
+}
+
+h3 {
+	margin-top:25px;
+	margin-bottom:2px;
+	margin-left:0px;
+}
