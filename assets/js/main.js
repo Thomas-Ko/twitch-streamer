@@ -3,7 +3,7 @@ model = {
 
 	channels : [
 		"freecodecamp", "storbeck", "jcarverpoker","terakilobyte", "habathcx","RobotCaleb","thomasballinger",
-		"noobs2ninjas","beohoff", "starladder_cs_en","callofduty"
+		"noobs2ninjas","beohoff", "starladder_cs_en","callofduty", 
 	],	
 
 	channelData : {
@@ -232,8 +232,10 @@ view = {
 
 	offlineButton: function(){
 		$("#statusOffline").on("click", function(){
-			$(".online").hide();
-			$(".offline").show();
+			$(".online").slideUp("400", function(){
+				$(".offline").slideDown("400");
+			});
+
 			$("#statusOnline").removeClass("active");
 			$("#statusOffline").addClass("active");
 			$("#statusAll").removeClass("active");
@@ -242,8 +244,10 @@ view = {
 
 	onlineButton: function(){
 		$("#statusOnline").on("click", function(){
-			$(".offline").hide();
-			$(".online").show();
+			$(".offline").slideUp("400", function(){
+				$(".online").slideDown("400");
+			});
+			
 			$("#statusOnline").addClass("active");
 			$("#statusOffline").removeClass("active");
 			$("#statusAll").removeClass("active");
@@ -253,8 +257,9 @@ view = {
 
 	allButton: function(){
 		$("#statusAll").on("click", function(){
-			$(".offline").show();
-			$(".online").show();
+			$(".offline").slideDown("400");
+			$(".online").slideDown("400");
+
 			$("#statusOnline").removeClass("active");
 			$("#statusOffline").removeClass("active");
 			$("#statusAll").addClass("active");
