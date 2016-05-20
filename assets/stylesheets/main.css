@@ -48,11 +48,25 @@ main {
 .status-div {
 	padding-top:10px;
 	padding-bottom:10px;
+	cursor: pointer;
+	text-shadow: 1px 1px 1px rgba(36, 33, 43, 0.5);
+		transition: all 0.2s ease;
+}
+
+.status-div:hover {
+	background-color: rgba(255, 238, 118, 0.4);
+}
+
+.status-div:active {
+	background-color: rgba(255, 238, 118, 0.6);
 }
 
 .active {
-	background-color: rgba(140, 222, 168, 0.5);
+	background-color: rgba(255, 238, 118, 0.7);
+}
 
+.active:hover {
+	background-color: rgba(255, 238, 118, 0.7);
 }
 
 .online-div {
@@ -73,6 +87,7 @@ h1 {
 
 .channel {
 	padding:0px;
+	/*transition: all 5.5s ease;*/
 }
 
 .channel-inner {
@@ -81,7 +96,11 @@ h1 {
 	border-top: 1px solid #f8fafa;
 }
 
-.online {
+span {
+	font-size:13px;
+}
+
+.online-bg {
 	background-color: rgba(53, 160, 128, 0.05)
 	
 }
@@ -94,7 +113,7 @@ h1 {
 
 
 
-.offline {
+.offline-bg {
 	background-color: rgba(238, 78, 86, 0.05);
 }
 
@@ -123,6 +142,8 @@ img {
 	padding:10px;
 	align:middle;
 	/*margin-left:5px;*/
+
+	
 }
 
 h3 {

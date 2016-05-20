@@ -228,6 +228,9 @@ view = {
 		$("#statusOffline").on("click", function(){
 			$(".online").hide();
 			$(".offline").show();
+			$("#statusOnline").removeClass("active");
+			$("#statusOffline").addClass("active");
+			$("#statusAll").removeClass("active");
 		});
 	},
 
@@ -235,6 +238,10 @@ view = {
 		$("#statusOnline").on("click", function(){
 			$(".offline").hide();
 			$(".online").show();
+			$("#statusOnline").addClass("active");
+			$("#statusOffline").removeClass("active");
+			$("#statusAll").removeClass("active");
+
 		});
 	},
 
@@ -242,6 +249,9 @@ view = {
 		$("#statusAll").on("click", function(){
 			$(".offline").show();
 			$(".online").show();
+			$("#statusOnline").removeClass("active");
+			$("#statusOffline").removeClass("active");
+			$("#statusAll").addClass("active");
 		});
 	}
 
