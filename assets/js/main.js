@@ -185,9 +185,15 @@ view = {
 			var displayName = data[i].displayName;
 			var status = data[i].status;
 			var viewers = data[i].viewers;
-			var logoURL = data[i].logoURL;
+			
 			var streaming = data[i].streaming;
 			var imgID = displayName +"IMG";
+
+			var logoURL = data[i].logoURL;
+
+			if(logoURL ===null){
+				logoURL="assets/img/twitch-icon.svg";
+			}
 
 			var streamBackground,streamIconHTML, statusHTML;
 
