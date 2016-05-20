@@ -2,7 +2,7 @@ model = {
 
 
 	channels : [
-		"freecodecamp", "storbeck", "terakilobyte", "habathcx","RobotCaleb","thomasballinger",
+		"freecodecamp", "storbeck", "jcarverpoker","terakilobyte", "habathcx","RobotCaleb","thomasballinger",
 		"noobs2ninjas","beohoff", "starladder_cs_en","callofduty"
 	],	
 
@@ -15,14 +15,32 @@ model = {
 		url: null,
 		viewers: null,
 		streaming:null,
-	}
+	},
+
+	ChannelObj : function (name, displayName, status, followers, logoURL, url, streaming) {
+        this.name = name;
+        this.displayName = displayName;
+        this.status = status;
+        this.followers = followers;
+        this.logoURL = logoURL;
+        this.url = url;
+        this.streaming = streaming;
+    },
+
+    channelsArray: [],
+
+       
 };
 
 
 controller= {
 	init : function(){
 		// controller.getChannelAPIData(model.channels[8]);
-		controller.getChannelStreamStatus(model.channels[8]);
+		// controller.getChannelStreamStatus(model.channels[0]);
+
+		for (i=0; i<=model.channels.length; i++){
+			controller.getChannelStreamStatus(model.channels[i]);
+		}
 		
 		
 		view.init();
@@ -35,8 +53,8 @@ controller= {
 	  		dataType: "jsonp",
 
 	  		success: function( response ) {
-	   	 		console.log(response.display_name);
-	   	 		console.log(response);
+	   	 		// console.log(response.display_name);
+	   	 		// console.log(response);
 	   	 		controller.setChannelModel(response);
 	   	 		
 	    	},
@@ -58,8 +76,8 @@ controller= {
 		});
 	},
 
-	setChannelModel : function(channelObj){
-		model.channelData = {
+	setChannelModel : function(channelObj, streamStatus){
+	/*	model.channelData = {
 			name: channelObj.name,
 			displayName: channelObj.display_name,
 			status: channelObj.status,
@@ -67,7 +85,21 @@ controller= {
 			logoURL: channelObj.logo,
 			url: channelObj.url,
 			// viewers: channelObj.views,
-		};		
+		};*/		
+
+			console.log("set channel model");
+			console.log(channelObj);
+
+			var name 	= channelObj.name,
+			displayName = channelObj.display_name,
+			status 		= channelObj.status,
+			followers 	= channelObj.followers,
+			logoURL 	= channelObj.logo,
+			url 		= channelObj.url;
+			streaming	= streamStatus;
+
+			var newObj = new model.ChannelObj(name, displayName, status, followers, logoURL, url, streaming);
+            model.channelsArray.push(newObj);
 	},
 
 	setChannelStatus : function(channelObj, channelName){
@@ -83,30 +115,45 @@ controller= {
 		} else {
 			stream = true;
 
-			model.channelData = {
-				name: channelObj.stream.channel.name,
-				displayName: channelObj.stream.channel.display_name,
-				status: channelObj.stream.channel.status,
-				followers: channelObj.stream.channel.followers,
-				logoURL: channelObj.stream.channel.logo,
-				url: channelObj._links.self,
-				viewers: channelObj.stream.viewers,
-				streaming : stream,
-			};	
+			// model.channelData = {
+			// 	name: channelObj.stream.channel.name,
+			// 	displayName: channelObj.stream.channel.display_name,
+			// 	status: channelObj.stream.channel.status,
+			// 	followers: channelObj.stream.channel.followers,
+			// 	logoURL: channelObj.stream.channel.logo,
+			// 	url: channelObj._links.self,
+			// 	viewers: channelObj.stream.viewers,
+			// 	streaming : stream,
+			// };	
+
+
+				var name 	= channelObj.stream.channel.name,
+				displayName = channelObj.stream.channel.display_name,
+				status 		= channelObj.stream.channel.status,
+				followers 	= channelObj.stream.channel.followers,
+				logoURL 	= channelObj.stream.channel.logo,
+				url 		= channelObj._links.self,
+				viewers 	= channelObj.stream.viewers,
+				streaming 	= stream;
+
+				var newObj = new model.ChannelObj(name, displayName, status, followers, logoURL, url, streaming);
+            	model.channelsArray.push(newObj);
+			
 		}
 
 		console.log("stream is " +stream);
 
 		
-		console.log(channelObj);
+		// console.log(channelObj);
 		// console.log(channelObj.stream.channel.logo);
 
 	},
 
 	getChannelModel : function(){
-		console.log("getChannelModel:");
-		console.log(model.channelData);
-		return model.channelData;
+		// console.log("getChannelModel:");
+		// console.log(model.channelData);
+		// return model.channelData;
+		return model.channelsArray;
 
 	},
 
@@ -125,42 +172,50 @@ view = {
 	renderDiv: function(data){
 		// console.log(data);
 		// console.log(data.streaming);
-		var followers = data.followers;
-		var displayName = data.displayName;
-		var status = data.status;
-		var viewers = data.viewers;
-		var logoURL = data.logoURL;
-		var streaming = data.streaming;
-		var imgID = displayName +"IMG";
 
-		var streamRowClass,streamIconHTML, statusHTML;
+		console.log(data);
 
-		if (streaming){
-			streamRowClass = 'online';
-			streamIconHTML = '<i class="fa fa-check-circle online-icon icon" aria-hidden="true"></i>';
-			statusHTML = '<span>'+status+'</status>';
+		for (i=0; i<data.length; i++){
 
-		} else {
-			streamRowClass = 'offline';
-			streamIconHTML = '<i class="fa fa-minus-circle offline-icon icon" aria-hidden="true"></i>';
-			statusHTML = '<span></status>';
-		}
 
-		// console.log(logoURL);
+			var followers = data[i].followers;
+			var displayName = data[i].displayName;
+			var status = data[i].status;
+			var viewers = data[i].viewers;
+			var logoURL = data[i].logoURL;
+			var streaming = data[i].streaming;
+			var imgID = displayName +"IMG";
 
-		$("main").append(
-			'<div class="col-xs-12 channel">'+
-				'<div class="channel-inner">' +
-					'<div class="row '+streamRowClass+'">' +
-						'<div class="col-xs-2"><img src=' + logoURL + ' id="'+ imgID +'"></div>' +
-						'<div class="col-xs-10 info-container">'+
-							'<h3>'+displayName+'</h3>'+ statusHTML+ streamIconHTML+
+			var streamRowClass,streamIconHTML, statusHTML;
+
+			if (streaming){
+				streamRowClass = 'online';
+				streamIconHTML = '<i class="fa fa-check-circle online-icon icon" aria-hidden="true"></i>';
+				statusHTML = '<span>'+status+'</status>';
+
+			} else {
+				streamRowClass = 'offline';
+				streamIconHTML = '<i class="fa fa-minus-circle offline-icon icon" aria-hidden="true"></i>';
+				statusHTML = '<span></status>';
+			}
+
+			// console.log(logoURL);
+
+			$("main").append(
+				'<div class="col-xs-12 channel">'+
+					'<div class="channel-inner">' +
+						'<div class="row '+streamRowClass+'">' +
+							'<div class="col-xs-2"><img src=' + logoURL + ' id="'+ imgID +'"></div>' +
+							'<div class="col-xs-10 info-container">'+
+								'<h3>'+displayName+'</h3>'+ statusHTML+ streamIconHTML+
+							'</div>' +
 						'</div>' +
-					'</div>' +
-				'</div>'+
-			'</div>');
+					'</div>'+
+				'</div>');
 
-		$("#"+imgID ).attr( "src", logoURL );
+			$("#"+imgID ).attr( "src", logoURL );
+
+		}
 
 	}
 };
