@@ -102,6 +102,7 @@ view = {
 		var logoURL = data.logoURL;
 		var streaming = data.streaming;
 		var streamStatus;
+		var imgID = displayName;
 
 		var streamHtmlCode;
 
@@ -111,7 +112,21 @@ view = {
 			streamHtmlCode = '<p>Offline</p>';
 		}
 
-		$("body").append('<h3>'+displayName+'</h3><p>'+status+'</p><p>' + followers + ' Followers</p><p>'+views+' Views</p>' + '<img src="' + logoURL+'">' + streamHtmlCode);
+		console.log(logoURL);
+
+		$("main").append(
+			'<div class="col-xs-12 channel">'+
+				'<div class="channel-inner">' +
+					'<div class="row">' +
+						'<div class="col-xs-2"><img src=' + logoURL + ' id="'+ imgID +'"></div>' +
+						'<div class="col-xs-10 info-container">'+
+							'<h3>'+displayName+'</h3>'+
+						'</div>' +
+					'</div>' +
+				'</div>'+
+			'</div>');
+
+		$("#"+imgID ).attr( "src", logoURL );
 
 	}
 };
