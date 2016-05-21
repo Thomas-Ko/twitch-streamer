@@ -1,22 +1,17 @@
+/*=========================
+	MODEL
+=========================*/
+
 model = {
 
-
-	channels : [
+	//These are the names of the channels that we want to get information on.
+	channelsArray : [
 		"freecodecamp", "storbeck", "jcarverpoker","terakilobyte", "habathcx","RobotCaleb","thomasballinger",
-		"noobs2ninjas","beohoff", "starladder_cs_en","callofduty", "comster404" 
+		"noobs2ninjas","beohoff", "starladder_cs_en","callofduty", "syndicate", "esl_csgo",
+		"nightblue3", "summit1g", "riotgames", "comster404"
 	],	
 
-	channelData : {
-		name: null,
-		displayName : null,
-		status: null,
-		followers: null,
-		logoURL: null,
-		url: null,
-		viewers: null,
-		streaming:null,
-	},
-
+	//this object constructor is used in the controller; objects containing channel information will then be passed to model.channelsDataArray
 	ChannelObj : function (name, displayName, status, followers, logoURL, url, streaming) {
         this.name = name;
         this.displayName = displayName;
@@ -27,205 +22,164 @@ model = {
         this.streaming = streaming;
     },
 
-    channelsArray: [],
+    //this array will be populated with channel objects containing information about the channels in model.channelsArray
+    channelsDataArray : [],      
 
-       
-};
+}; //end model
 
+
+/*=========================
+	CONTROLLER
+=========================*/
 
 controller= {
 	init : function(){
-		// controller.getChannelAPIData(model.channels[8]);
-		// controller.getChannelStreamStatus(model.channels[0]);
-
-		for (i=0; i<=model.channels.length; i++){
-			controller.getChannelStreamStatus(model.channels[i]);
-		}
-		
-		
+		controller.loopThroughChannels();
 		view.init();
 	},
 
-	getChannelAPIData: function(channelName){
+	//loops through the models.channels array and runs an API call on each channel
+	loopThroughChannels : function(){
+		for (i=0; i<=model.channelsArray.length; i++){
+			controller.getChannelData(model.channelsArray[i]);
+		}
+	},
+
+	/*this function is used to get extra data of channels that are offline from the twitch API; 
+	it's used inside the model.setChannelModel function if channel is not live*/
+	getOfflineChannelData: function(channelName){
 		$.ajax({
 	  		method: "GET",
 	  		url: "https://api.twitch.tv/kraken/channels/" + channelName +"?callback=?",
 	  		dataType: "jsonp",
 
-	  		success: function( response ) {
-	   	 		// console.log(response.display_name);
-	   	 		// console.log(response);
-	   	 		controller.setChannelModel(response);
-	   	 		
+	  		success: function(response) {
+	   	 		controller.setOfflineChannelModel(response);  	 		
 	    	},
 		});
 	},
 
-	getChannelStreamStatus: function(channelName){
+	/*this function is used to see get a channel's stream status from the twitch API
+	Note: if a channel is streaming, then the object/response returned will contain extra data*/
+	getChannelData: function(channelName){
 		$.ajax({
 	  		method: "GET",
 	  		url: "https://api.twitch.tv/kraken/streams/" + channelName +"?callback=?",
 	  		dataType: "jsonp",
 
-	  		success: function( response ) {
-	   	 		console.log("getChannelStreamStatus:");
-	   	 		// console.log(response.stream);
-	   	 		console.log(response);
-	   	 		controller.setChannelStatus(response, channelName);
-	   	 		// controller.getChannelAPIData(channelName);
+	  		success: function(response) {
+	   	 		controller.setChannelModel(response, channelName);
 	    	},
-
-	    	error: function(){
-	    		console.log("There was an error");
-	    	}
 		});
 	},
 
-	setChannelModel : function(channelObj, streamStatus){
-	/*	model.channelData = {
-			name: channelObj.name,
-			displayName: channelObj.display_name,
-			status: channelObj.status,
-			followers: channelObj.followers,
-			logoURL: channelObj.logo,
-			url: channelObj.url,
-			// viewers: channelObj.views,
-		};*/		
-
-			console.log("set channel model");
-			console.log(channelObj);
-
-			var name 	= channelObj.name,
-			displayName = channelObj.display_name,
-			status 		= channelObj.status,
-			followers 	= channelObj.followers,
-			logoURL 	= channelObj.logo,
-			url 		= channelObj.url;
+	setOfflineChannelModel : function(obj, streamStatus){
+			var name 	= obj.name,
+			displayName = obj.display_name,
+			status 		= obj.status,
+			followers 	= obj.followers,
+			logoURL 	= obj.logo,
+			url 		= obj.url;
 			streaming	= streamStatus;
 
+			//create new ChannelObj and push it to an array;
 			var newObj = new model.ChannelObj(name, displayName, status, followers, logoURL, url, streaming);
-            model.channelsArray.push(newObj);
+            model.channelsDataArray.push(newObj);
 	},
 
-	setChannelStatus : function(channelObj, channelName){
+	setChannelModel : function(obj, channelName){
 		var stream;
 
 		//if channel is unprocessable / doesn't exist
-		if (channelObj.error=== "Unprocessable Entity") {
-			console.log(channelObj.message);
-			
-				
-
-				// var newObj = new model.ChannelObj(channelName, channelName, channelObj.message, null, null, null, null);
-            	model.channelsArray.push(new model.ChannelObj(channelName, channelName, channelObj.message, null, null, null, "unprocessable"));
+		if (obj.error=== "Unprocessable Entity") {
+            	//create new ChannelObj and push it to an array
+            	model.channelsDataArray.push(new model.ChannelObj(channelName, channelName, obj.message, null, null, null, "unprocessable"));
 		
-		/*For some reason, even those there's no such channel as undefined in model.channels, this still runs through an API call, so this
-		else if code prevents it from showing up as a channel on the webpage*/
-		} else if(channelObj._links.channel==="https://api.twitch.tv/kraken/channels/undefined"){
+		/*For some reason, even those there's no such channel as undefined in model.channelsArray, a channel called undefined still runs through an API call, 
+		so this else if code prevents it from showing up as a channel on the webpage*/
+		} else if(obj._links.channel==="https://api.twitch.tv/kraken/channels/undefined"){
 			return;
-		}else if(channelObj.stream===null){
-			stream = false;
-			model.channelData = {
-				streaming : stream,
-			};	
-			controller.getChannelAPIData(channelName);
 
+		//if channel is not streaming now	
+		}else if(obj.stream===null){
+			stream = false;
+			
+			//get information running this function (this is needed because some information is not shown when a channel is offline);
+			controller.getOfflineChannelData(channelName);
+
+		//if channel is streaming
 		} else {
 			stream = true;
-
-			// model.channelData = {
-			// 	name: channelObj.stream.channel.name,
-			// 	displayName: channelObj.stream.channel.display_name,
-			// 	status: channelObj.stream.channel.status,
-			// 	followers: channelObj.stream.channel.followers,
-			// 	logoURL: channelObj.stream.channel.logo,
-			// 	url: channelObj._links.self,
-			// 	viewers: channelObj.stream.viewers,
-			// 	streaming : stream,
-			// };	
-
-
-				var name 	= channelObj.stream.channel.name,
-				displayName = channelObj.stream.channel.display_name,
-				status 		= channelObj.stream.channel.status,
-				followers 	= channelObj.stream.channel.followers,
-				logoURL 	= channelObj.stream.channel.logo,
-				url 		= channelObj._links.self,
-				viewers 	= channelObj.stream.viewers,
+				var name 	= obj.stream.channel.name,
+				displayName = obj.stream.channel.display_name,
+				status 		= obj.stream.channel.status,
+				followers 	= obj.stream.channel.followers,
+				logoURL 	= obj.stream.channel.logo,
+				url 		= obj._links.self,
+				viewers 	= obj.stream.viewers,
 				streaming 	= stream;
 
+				//create new ChannelObj and push it to an array;
 				var newObj = new model.ChannelObj(name, displayName, status, followers, logoURL, url, streaming);
-            	model.channelsArray.push(newObj);
-			
+            	model.channelsDataArray.push(newObj);
 		}
+	}, //end controller.setChannelModel
 
-		console.log("stream is " +stream);
-
-		
-		// console.log(channelObj);
-		// console.log(channelObj.stream.channel.logo);
-
-	},
-
-	getChannelModel : function(){
-		// console.log("getChannelModel:");
-		// console.log(model.channelData);
-		// return model.channelData;
-		return model.channelsArray;
-
+	//get the array of channels and their information from the model; used in the view.init function
+	getChannelsData : function(){
+		return model.channelsDataArray;
 	},
 
 };  //end controller
 
+
+/*=========================
+	VIEW
+=========================*/
+
 view = {
 	init: function(){
 		$(document).ajaxStop(function () {
-			// console.log("view init function");
-			var data = controller.getChannelModel();
-			// console.log(data);
-			view.renderDiv(data);
-			view.offlineButton();
-			view.onlineButton();
-			view.allButton();
+			var data = controller.getChannelsData();
+			view.renderDivs(data);
+			view.buttons.buttonsInit();	
 		});
 	},
 
-	renderDiv: function(data){
-		// console.log(data);
-		// console.log(data.streaming);
-
-		console.log(data);
-
+	renderDivs: function(data){
+		//loops through the channels
 		for (i=0; i<data.length; i++){
-
-
 			var followers = data[i].followers;
 			var displayName = data[i].displayName;
 			var status = data[i].status;
 			var viewers = data[i].viewers;
-			
 			var streaming = data[i].streaming;
 			var imgID = displayName +"IMG";
-
 			var logoURL = data[i].logoURL;
 
+			//if there is no logo, assign a placeholder image
 			if(logoURL ===null){
 				logoURL="assets/img/twitch-icon.svg";
 			}
 
+			//these variables will be usedd when appended html to the main section
 			var streamBackground,streamIconHTML, statusHTML;
 
+			//if channel is unprocessable / doesn't exist
 			if (streaming==="unprocessable"){
 				streamClass = "offline";
 				streamBackground = 'unprocessable-bg';
 				streamIconHTML = '<i class="fa fa-times-circle icon" aria-hidden="true"></i>';
 				statusHTML = '<span>'+status+'</status>';
+			
+			// if channel is live (streaming=true  here)
 			} else if (streaming){
 				streamClass = "online";
 				streamBackground = 'online-bg';
 				streamIconHTML = '<i class="fa fa-check-circle online-icon icon" aria-hidden="true"></i>';
 				statusHTML = '<span>'+status+'</status>';
-
+			
+			// if channel is offline
 			} else {
 				streamClass = "offline";
 				streamBackground = 'offline-bg';
@@ -233,84 +187,79 @@ view = {
 				statusHTML = '<span></status>';
 			}
 
-			// console.log(logoURL);
-
+			//code is tabbed here to resemble an html file
 			$("main").append(
 				'<div class="col-xs-12 channel '+ streamClass +'">'+
 					'<div class="channel-inner">' +
 						'<div class="row '+streamBackground+'">' +
 							'<div class="col-xs-2"><img src=' + logoURL + ' id="'+ imgID +'"></div>' +
 							'<div class="col-xs-10 info-container">'+
-								'<h3>'+displayName+'</h3>'+ statusHTML+ streamIconHTML+
+								'<h3>'+displayName+'</h3>'+ 
+								statusHTML+ 
+								streamIconHTML+
 							'</div>' +
 						'</div>' +
 					'</div>'+
 				'</div>');
 
+			//this is needed because sometimes the image doesn't display in the append above
 			$("#"+imgID ).attr( "src", logoURL );
+		} //end for-loop
 
-		}
+	}, //end view.renderDivs
 
-	}, //end view.renderDiv
+	
+	//object contains all methods dealing with buttons
+	buttons : {
+		
+		//contains all button methods; used in view.init function
+		buttonsInit: function(){
+			this.offlineButton();
+			this.onlineButton();
+			this.allButton();
+		},
 
-	offlineButton: function(){
-		$("#statusOffline").on("click", function(){
-			$(".online").slideUp("400", function(){
+		offlineButton: function(){
+			$("#statusOffline").on("click", function(){
+				$(".online").slideUp("400", function(){
+					$(".offline").slideDown("400");
+				});
+			  //adds class to proper navbar tab (Offline)
+				$("#statusOnline").removeClass("active");
+				$("#statusOffline").addClass("active");
+				$("#statusAll").removeClass("active");
+			});
+		},
+
+		onlineButton: function(){
+			$("#statusOnline").on("click", function(){
+				$(".offline").slideUp("400", function(){
+					$(".online").slideDown("400");
+				});
+			  //adds class to proper navbar tab (Online)
+				$("#statusOnline").addClass("active");
+				$("#statusOffline").removeClass("active");
+				$("#statusAll").removeClass("active");
+
+			});
+		},
+
+		allButton: function(){
+			$("#statusAll").on("click", function(){
 				$(".offline").slideDown("400");
-			});
-
-			$("#statusOnline").removeClass("active");
-			$("#statusOffline").addClass("active");
-			$("#statusAll").removeClass("active");
-		});
-	},
-
-	onlineButton: function(){
-		$("#statusOnline").on("click", function(){
-			$(".offline").slideUp("400", function(){
 				$(".online").slideDown("400");
+			  //adds class to proper navbar tab (All)
+				$("#statusOnline").removeClass("active");
+				$("#statusOffline").removeClass("active");
+				$("#statusAll").addClass("active");
 			});
-			
-			$("#statusOnline").addClass("active");
-			$("#statusOffline").removeClass("active");
-			$("#statusAll").removeClass("active");
+		},
 
-		});
-	},
-
-	allButton: function(){
-		$("#statusAll").on("click", function(){
-			$(".offline").slideDown("400");
-			$(".online").slideDown("400");
-
-			$("#statusOnline").removeClass("active");
-			$("#statusOffline").removeClass("active");
-			$("#statusAll").addClass("active");
-		});
-	}
+	}, //end view.buttons
+}; //end view
 
 
-
-};
-
-// $.ajax({
-//   	method: "GET",
-//   	url: "https://api.twitch.tv/kraken/streams/freecodecamp?callback=?",
-//   	dataType: "jsonp",
-
-//   	success: function( response ) {
-//    	 	console.log(response);
-    	
-//     },
-// });
-
-// $.getJSON('https://api.twitch.tv/kraken/streams/freecodecamp?callback=?', function(data) {
-//   console.log(data);
-// });
-
-// $.getJSON('https://api.twitch.tv/kraken/channels/freecodecamp?callback=?', function(data) {
-//   console.log(data);
-// });
-
-// controller.getChannelData(model.channels[0]);
+/*=========================
+	INITIALIZE
+=========================*/
 controller.init();
