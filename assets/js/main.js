@@ -119,9 +119,6 @@ controller= {
 				viewers 	= obj.stream.viewers,
 				streaming 	= stream;
 
-				console.log(obj);
-				console.log(url);
-
 				//create new ChannelObj and push it to an array;
 				var newObj = new model.ChannelObj(name, displayName, status, followers, logoURL, url, streaming);
             	model.channelsDataArray.push(newObj);
@@ -130,8 +127,6 @@ controller= {
 
 	//get the array of channels and their information from the model; used in the view.init function
 	getChannelsData : function(){
-		console.log("getChannelsData");
-		console.log(model.channelsDataArray);
 		return model.channelsDataArray;
 	},
 
@@ -162,9 +157,6 @@ view = {
 			var imgID = displayName +"IMG";
 			var url = data[i].url;
 			var logoURL = data[i].logoURL;
-
-			console.log("URL IS");
-			console.log(url);
 
 			//if there is no logo, assign a placeholder image
 			if(logoURL ===null){
@@ -203,7 +195,7 @@ view = {
 			}
 
 			//code is tabbed here to resemble an html file
-			$("main").append(
+			$("#mainRow").append(
 				'<div class="col-xs-12 channel '+ streamClass +'">'+
 					urlHTML +
 						'<div class="channel-inner">' +
