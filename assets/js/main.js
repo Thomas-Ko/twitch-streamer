@@ -115,9 +115,12 @@ controller= {
 				status 		= obj.stream.channel.status,
 				followers 	= obj.stream.channel.followers,
 				logoURL 	= obj.stream.channel.logo,
-				url 		= obj._links.self,
+				url 		= obj.stream.channel.url,
 				viewers 	= obj.stream.viewers,
 				streaming 	= stream;
+
+				console.log(obj);
+				console.log(url);
 
 				//create new ChannelObj and push it to an array;
 				var newObj = new model.ChannelObj(name, displayName, status, followers, logoURL, url, streaming);
@@ -127,6 +130,8 @@ controller= {
 
 	//get the array of channels and their information from the model; used in the view.init function
 	getChannelsData : function(){
+		console.log("getChannelsData");
+		console.log(model.channelsDataArray);
 		return model.channelsDataArray;
 	},
 
@@ -155,7 +160,11 @@ view = {
 			var viewers = data[i].viewers;
 			var streaming = data[i].streaming;
 			var imgID = displayName +"IMG";
+			var url = data[i].url;
 			var logoURL = data[i].logoURL;
+
+			console.log("URL IS");
+			console.log(url);
 
 			//if there is no logo, assign a placeholder image
 			if(logoURL ===null){
@@ -163,7 +172,7 @@ view = {
 			}
 
 			//these variables will be usedd when appended html to the main section
-			var streamBackground,streamIconHTML, statusHTML;
+			var streamBackground,streamIconHTML, statusHTML, urlHTML, urlHTMLend;
 
 			//if channel is unprocessable / doesn't exist
 			if (streaming==="unprocessable"){
@@ -171,6 +180,8 @@ view = {
 				streamBackground = 'unprocessable-bg';
 				streamIconHTML = '<i class="fa fa-times-circle icon" aria-hidden="true"></i>';
 				statusHTML = '<span>'+status+'</status>';
+				urlHTML="";
+				urlHTMLend="";
 			
 			// if channel is live (streaming=true  here)
 			} else if (streaming){
@@ -178,6 +189,8 @@ view = {
 				streamBackground = 'online-bg';
 				streamIconHTML = '<i class="fa fa-check-circle online-icon icon" aria-hidden="true"></i>';
 				statusHTML = '<span>'+status+'</status>';
+				urlHTML = '<a href="' +url +'" target="_blank">';
+				urlHTMLend='</a>';
 			
 			// if channel is offline
 			} else {
@@ -185,21 +198,26 @@ view = {
 				streamBackground = 'offline-bg';
 				streamIconHTML = '<i class="fa fa-minus-circle offline-icon icon" aria-hidden="true"></i>';
 				statusHTML = '<span></status>';
+				urlHTML = '<a href="' +url +'" target="_blank">';
+				urlHTMLend='</a>';
 			}
 
 			//code is tabbed here to resemble an html file
 			$("main").append(
 				'<div class="col-xs-12 channel '+ streamClass +'">'+
-					'<div class="channel-inner">' +
-						'<div class="row '+streamBackground+'">' +
-							'<div class="col-xs-2"><img src=' + logoURL + ' id="'+ imgID +'"></div>' +
-							'<div class="col-xs-10 info-container">'+
-								'<h3>'+displayName+'</h3>'+ 
-								statusHTML+ 
-								streamIconHTML+
+					urlHTML +
+						'<div class="channel-inner">' +
+							'<div class="row '+streamBackground+'">' +
+								'<div class="col-xs-2"><img src=' + logoURL + ' id="'+ imgID +'"></div>' +
+								'<div class="col-xs-10 info-container">'+
+									'<h3>'+displayName+'</h3>'+ 
+									statusHTML+ 
+									streamIconHTML+
+									
+								'</div>' +
 							'</div>' +
-						'</div>' +
-					'</div>'+
+						'</div>'+ 
+					urlHTMLend+
 				'</div>');
 
 			//this is needed because sometimes the image doesn't display in the append above

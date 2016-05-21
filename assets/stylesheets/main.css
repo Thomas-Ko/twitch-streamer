@@ -85,6 +85,10 @@ h1 {
 	/*color: #FFF3A1;*/
 }
 
+a, a:hover, a:focus, a:active, a:visited {
+	color: #333;
+}
+
 .channel {
 	padding:0px;
 	/*transition: all 5.5s ease;*/
@@ -101,8 +105,7 @@ span {
 }
 
 .online-bg {
-	background-color: rgba(53, 160, 128, 0.1)
-	
+	background-color: rgba(53, 160, 128, 0.1);
 }
 
 .online-icon {
