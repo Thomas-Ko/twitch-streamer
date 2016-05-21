@@ -101,7 +101,7 @@ span {
 }
 
 .online-bg {
-	background-color: rgba(53, 160, 128, 0.05)
+	background-color: rgba(53, 160, 128, 0.1)
 	
 }
 
@@ -114,13 +114,17 @@ span {
 
 
 .offline-bg {
-	background-color: rgba(238, 78, 86, 0.05);
+	background-color: rgba(238, 78, 86, 0.1);
 }
 
 .offline-icon {
 	color: rgba(219, 39, 48, 1);
 	text-shadow: 0px 0px 7px rgba(238, 78, 86, 1);
 	
+}
+
+.unprocessable-bg {
+	opacity:0.5;
 }
 
 .icon {

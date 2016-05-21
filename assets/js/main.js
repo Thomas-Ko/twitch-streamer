@@ -3,7 +3,7 @@ model = {
 
 	channels : [
 		"freecodecamp", "storbeck", "jcarverpoker","terakilobyte", "habathcx","RobotCaleb","thomasballinger",
-		"noobs2ninjas","beohoff", "starladder_cs_en","callofduty", 
+		"noobs2ninjas","beohoff", "starladder_cs_en","callofduty", "comster404" 
 	],	
 
 	channelData : {
@@ -69,10 +69,15 @@ controller= {
 
 	  		success: function( response ) {
 	   	 		console.log("getChannelStreamStatus:");
-	   	 		console.log(response.stream);
+	   	 		// console.log(response.stream);
+	   	 		console.log(response);
 	   	 		controller.setChannelStatus(response, channelName);
 	   	 		// controller.getChannelAPIData(channelName);
 	    	},
+
+	    	error: function(){
+	    		console.log("There was an error");
+	    	}
 		});
 	},
 
@@ -105,7 +110,20 @@ controller= {
 	setChannelStatus : function(channelObj, channelName){
 		var stream;
 
-		if(channelObj.stream===null){
+		//if channel is unprocessable / doesn't exist
+		if (channelObj.error=== "Unprocessable Entity") {
+			console.log(channelObj.message);
+			
+				
+
+				// var newObj = new model.ChannelObj(channelName, channelName, channelObj.message, null, null, null, null);
+            	model.channelsArray.push(new model.ChannelObj(channelName, channelName, channelObj.message, null, null, null, "unprocessable"));
+		
+		/*For some reason, even those there's no such channel as undefined in model.channels, this still runs through an API call, so this
+		else if code prevents it from showing up as a channel on the webpage*/
+		} else if(channelObj._links.channel==="https://api.twitch.tv/kraken/channels/undefined"){
+			return;
+		}else if(channelObj.stream===null){
 			stream = false;
 			model.channelData = {
 				streaming : stream,
@@ -197,7 +215,12 @@ view = {
 
 			var streamBackground,streamIconHTML, statusHTML;
 
-			if (streaming){
+			if (streaming==="unprocessable"){
+				streamClass = "offline";
+				streamBackground = 'unprocessable-bg';
+				streamIconHTML = '<i class="fa fa-times-circle icon" aria-hidden="true"></i>';
+				statusHTML = '<span>'+status+'</status>';
+			} else if (streaming){
 				streamClass = "online";
 				streamBackground = 'online-bg';
 				streamIconHTML = '<i class="fa fa-check-circle online-icon icon" aria-hidden="true"></i>';
