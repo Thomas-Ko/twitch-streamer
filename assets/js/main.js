@@ -50,9 +50,10 @@ controller= {
 	getOfflineChannelData: function(channelName){
 		$.ajax({
 	  		method: "GET",
-	  		url: "https://api.twitch.tv/kraken/channels/" + channelName +"?callback=?",
-	  		dataType: "jsonp",
-
+	  		url: "https://api.twitch.tv/kraken/channels/" + channelName,
+	  		headers: {
+	  		   'Client-ID': '41f0j069bm0y5xnl8mk1iwsk8j5jiq'
+	  		 },
 	  		success: function(response) {
 	   	 		controller.setOfflineChannelModel(response);  	 		
 	    	},
@@ -64,9 +65,10 @@ controller= {
 	getChannelData: function(channelName){
 		$.ajax({
 	  		method: "GET",
-	  		url: "https://api.twitch.tv/kraken/streams/" + channelName +"?callback=?",
-	  		dataType: "jsonp",
-
+	  		url: "https://api.twitch.tv/kraken/streams/" + channelName,
+	  		headers: {
+	  		   'Client-ID': '41f0j069bm0y5xnl8mk1iwsk8j5jiq'
+	  		 },
 	  		success: function(response) {
 	   	 		controller.setChannelModel(response, channelName);
 	    	},
